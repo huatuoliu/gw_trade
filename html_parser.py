@@ -61,6 +61,7 @@ class html_parser:
             print pq(i).children().eq(3).text()
             one_record = {}
             one_record["stock_code"] = pq(i).children().eq(3).text()
+            one_record["amount_commit"] = pq(i).children().eq(8).text()
             one_record["order_id"] = pq(i).children().eq(9).text()
             one_record["amount_done"] = pq(i).children().eq(10).text()
             ongoing_list.append(one_record)
