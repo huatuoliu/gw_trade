@@ -1,0 +1,16 @@
+
+use orderdb;
+CREATE TABLE cond_order (
+  order_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  stock_code varchar(30) NOT NULL DEFAULT '',
+  direction int(10) NOT NULL DEFAULT 1, #1: up; 2: down
+  action int(10), #1:buy; 2:sell
+  amount int(10) NOT NULL default 100,
+  compare_price int(10) NOT NULL default 0, #price * 1000
+  begin_in_day int(10) DEFAULT 0, #order begin time offset in a day. 0: effective in all day
+  end_in_day int(10) DEFAULT 0, #order end time offset in a day
+  state int(10)  NOT NULL default 0, #0: waiting for deal;1: finish; 2:cancel
+  update_time timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  insert_time timestamp NOT NULL,
+  PRIMARY KEY (order_id)
+) ENGINE=MyISAM   DEFAULT CHARACTER SET utf8;
