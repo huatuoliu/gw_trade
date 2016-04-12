@@ -30,29 +30,54 @@ try:
                 0: secuids_sz
             }
 except Exception, e:
-    print "Read Config.ini Fail: error=", e.message
+    print "Read Config.ini Fail: error=", e
     exit()
 
+try:
+    auto_trade = auto_trade(account, passwd_encrypted, secuids)
+except Exception, e:
+        print "Exception: msg=", e
+        exit()
 
-auto_trade = auto_trade(account, passwd_encrypted, secuids)
 if (args.action_type == "B" or args.action_type == "S"):
-    order_id = auto_trade.buy_sell(args.action_type, args.cmd_args[0], args.cmd_args[1],args.cmd_args[2])
+    try:
+        order_id = auto_trade.buy_sell(args.action_type, args.cmd_args[0], args.cmd_args[1],args.cmd_args[2])
+    except Exception, e:
+        print "Exception: msg=", e
+        exit()
+
     print order_id
     #ongoing_list = auto_trade.query_ongoing_order()
     #time.sleep(10)
     #for  record in ongoing_list:
     #    auto_trade.cancel_order(record["order_id"])
 elif (args.action_type == "Q"):
-    holdings = auto_trade.query_order()
+    try:
+        holdings = auto_trade.query_order()
+    except Exception, e:
+        print "Exception: msg=", e
+        exit()
     print holdings
 elif (args.action_type == "A"):
-    account_info = auto_trade.query_account()
+    try:
+        account_info = auto_trade.query_account()
+    except Exception, e:
+        print "Exception: msg=", e
+        exit()
     print account_info
 elif (args.action_type == "G"):
-    ongoing_list = auto_trade.query_ongoing_order()
+    try:
+        ongoing_list = auto_trade.query_ongoing_order()
+    except Exception, e:
+        print "Exception: msg=", e
+        exit()
     print ongoing_list
 elif (args.action_type == "C"):
-    auto_trade.cancel_order(args.cmd_args[0])
+    try:
+        auto_trade.cancel_order(args.cmd_args[0])
+    except Exception, e:
+        print "Exception: msg=", e
+        exit()
 else:
     print "No Such Action: " + args.action_type
 #except Exception, e:

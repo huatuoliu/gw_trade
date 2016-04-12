@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding:utf-8
 import os
-import Image, ImageEnhance, ImageFilter
+from PIL import Image, ImageEnhance, ImageFilter
 import sys
 from num_data import *
 

@@ -12,7 +12,7 @@ class trade_url:
     def prepare(self, first_url):
         tmp_cookie = cookielib.CookieJar()
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(tmp_cookie))
-        response = opener.open('https://trade.cgws.com/cgi-bin/user/Login?function=tradeLogout')
+        response = opener.open('https://trade.cgws.com/cgi-bin/user/Login?function=tradeLogout', timeout=5)
         for item in tmp_cookie:
             self.my_cookie+=item.name + "=" +item.value + ";"
         htm = response.read()
