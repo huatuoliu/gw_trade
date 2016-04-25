@@ -17,6 +17,7 @@ class html_parser:
             one_record["stock_code"] = pq(i).children().eq(0).text()
             one_record["stock_name"] = pq(i).children().eq(1).text()
             one_record["amount"] = pq(i).children().eq(3).text()
+            one_record["availble_amount"] = pq(i).children().eq(4).text()
             one_record["cost_price"] = pq(i).children().eq(5).text()
             one_record["total_value"] = pq(i).children().eq(7).text()
             one_record["profit_value"] = pq(i).children().eq(8).text()
