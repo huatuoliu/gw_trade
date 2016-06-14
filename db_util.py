@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# coding:utf-8
 from sqlalchemy import Column, String, Integer, Float, TIMESTAMP,  create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -35,19 +37,24 @@ class db_util:
         self.session.close()
 
     def add_condition_order(self, stock_code, direction, action, amount, compare_price, begin_in_day, end_in_day):
-            #insert into db
-            print "stock_code=", stock_code, ", direction=", direction, ", action=", action,  ", amount=",  amount, ", compare_price=", compare_price, ", begin_in_day=", begin_in_day, ", end_in_day=", end_in_day
-            new_order = cond_order(order_id=0, stock_code=stock_code, direction=direction, action=action,  amount=amount, compare_price=compare_price,
-                                   begin_in_day=begin_in_day, end_in_day=end_in_day, state=0, insert_time=func.now())
-            self.session.add(new_order)
-            #print new_order.stock_code
-            ret = self.session.commit()
+        #insert into db
+        print "stock_code=", stock_code, ", direction=", direction, ", action=", action,  ", amount=",  amount, ", compare_price=", compare_price, ", begin_in_day=", begin_in_day, ", end_in_day=", end_in_day
+        new_order = cond_order(order_id=0, stock_code=stock_code, direction=direction, action=action,  amount=amount, compare_price=compare_price,
+                               begin_in_day=begin_in_day, end_in_day=end_in_day, state=0, insert_time=func.now())
+        self.session.add(new_order)
+        #print new_order.stock_code
+        ret = self.session.commit()
 
-            return ret
-            #order_list = session.query(cond_order).filter(cond_order.stock_code==stock_code).all()
-            #print order_list
+        return ret
+        #order_list = session.query(cond_order).filter(cond_order.stock_code==stock_code).all()
+        #print order_list
+
+    def update_cond_order(self, order_id, state):
+        self.session.query(cond_order).filter(cond_order.order_id  == order_id).update({cond_order.state: state})
+
 
 
 db_util1 = db_util()
 db_util1.init_db()
-db_util1.add_condition_order("600036", 1, 1, 100, 17, 2, 3)
+#db_util1.add_condition_order("600036", 1, 1, 100, 17, 2, 3)
+db_util1.update_cond_order(2, 1)
