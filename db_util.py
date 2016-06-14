@@ -20,25 +20,34 @@ class cond_order(Base):
     update_time = Column(TIMESTAMP)
 class db_util:
     def __init__(self):
-        return
+        self.session = None
 
     def get_db_session(self):
-        engine = create_engine('mysql+pymysql://root:root123@localhost:3306/orderdb')
+        engine = create_engine('mysql+pymysql://order_user:order123@localhost:3306/orderdb')
         db_session = sessionmaker(bind=engine)
         return db_session
 
-db_util = db_util()
-Session = db_util.get_db_session()
-session = Session()
-new_order = cond_order(order_id=0, stock_code="600036", direction=1, action=1,  amount=1000, compare_price=14900,
-                       begin_in_day=0, end_in_day=0, state=0, insert_time=func.now())
-print new_order.compare_price
-session.add(new_order)
-print "fasdfa"
-#print new_order.stock_code
-session.commit()
+    def init_db(self):
+        Session = self.get_db_session()
+        self.session = Session()
 
-order_list = session.query(cond_order).filter(cond_order.stock_code=='600036').all()
-print order_list
-session.close()
+    def close_db(self):
+        self.session.close()
 
+    def add_condition_order(self, stock_code, direction, action, amount, compare_price, begin_in_day, end_in_day):
+            #insert into db
+            print "stock_code=", stock_code, ", direction=", direction, ", action=", action,  ", amount=",  amount, ", compare_price=", compare_price, ", begin_in_day=", begin_in_day, ", end_in_day=", end_in_day
+            new_order = cond_order(order_id=0, stock_code=stock_code, direction=direction, action=action,  amount=amount, compare_price=compare_price,
+                                   begin_in_day=begin_in_day, end_in_day=end_in_day, state=0, insert_time=func.now())
+            self.session.add(new_order)
+            #print new_order.stock_code
+            ret = self.session.commit()
+
+            return ret
+            #order_list = session.query(cond_order).filter(cond_order.stock_code==stock_code).all()
+            #print order_list
+
+
+db_util1 = db_util()
+db_util1.init_db()
+db_util1.add_condition_order("600036", 1, 1, 100, 17, 2, 3)
