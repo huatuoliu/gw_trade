@@ -21,8 +21,6 @@ class order_server:
         #thread.start_new_thread(process_order, )
         self.server.serve_forever()
 
-
-
 s = order_server()
 s.run()
 

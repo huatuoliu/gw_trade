@@ -1,12 +1,13 @@
 import threading
 import time
 from db_util import *
+from ftnn_api import *
+from stock_util import *
+from trade_util import *
 
 order_direction_def = {"up":1, "down":2}
 order_state_def = {"todo":0, "done":1, "cancel":2}
 order_action_def = {"buy":1, "sell":2}
-
-
 
 class ProcessCondOrder(threading.Thread):
     def __init__(self, proc_id):
@@ -18,13 +19,14 @@ class ProcessCondOrder(threading.Thread):
 
     #检查价格并且下单
     def check_price_do(self):
+        ft_api = Futu()
         for row in self.todo_orders:
-            now_price = get_now_price(row.stock_code)
-            if now_price >= row.compare_price and  row.direction == order_direction_def["up"]:
-                auto_trade.buy_sell()
-
-
-
+            xs_data  = ft_api.get_ticker(stock_util.get_market(row.stock_code), row.stock_code)
+            now_price = xs_data['Cur']
+            print "now_price=", now_price, ", row_compare_price=", row.compare_price
+            if now_price >= row.compare_price and  row.direction == order_direction_def["up"] \
+                    or  now_price >= row.compare_price and  row.direction == order_direction_def["down"]:
+                auto_trade.buy_sell(row.action, row.stock_code, row.deal_price, row.amount)
 
     #从数据库load数据到本地进行访问
     def load_from_db(self):

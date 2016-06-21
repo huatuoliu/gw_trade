@@ -6,6 +6,7 @@ CREATE TABLE cond_order (
   direction int(10) NOT NULL DEFAULT 1, #1: up; 2: down
   action int(10), #1:buy; 2:sell
   amount int(10) NOT NULL default 100,
+  deal_price int(10) NOT NULL default 0,  #price to make
   compare_price int(10) NOT NULL default 0, #price * 1000
   begin_in_day int(10) DEFAULT 0, #order begin time offset in a day. 0: effective in all day
   end_in_day int(10) DEFAULT 0, #order end time offset in a day
@@ -13,4 +14,4 @@ CREATE TABLE cond_order (
   update_time timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   insert_time timestamp NOT NULL,
   PRIMARY KEY (order_id)
-) ENGINE=MyISAM   DEFAULT CHARACTER SET utf8;
+)    DEFAULT CHARACTER SET utf8;

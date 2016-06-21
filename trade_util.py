@@ -80,7 +80,7 @@ class auto_trade:
         "stockName":"",
         "price": price,
         "fundavl": "1.00",
-        "maxBuy": maxBuy ,
+        "maxBuy": maxBuy,
         "amount": amount
         }
         ret = self.gw_trade.post_to_url("https://trade.cgws.com/cgi-bin/stock/StockEntrust?function=StockBusiness", post_data)

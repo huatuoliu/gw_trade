@@ -14,6 +14,7 @@ class cond_order(Base):
     direction = Column(Integer)
     action = Column(Integer)
     amount = Column(Integer)
+    deal_price = Column(Integer)
     compare_price = Column(Integer)
     begin_in_day  = Column(Integer)
     end_in_day =  Column(Integer)
@@ -25,7 +26,7 @@ class db_util:
         self.session = None
 
     def get_db_session(self):
-        engine = create_engine('mysql+pymysql://root:root123@localhost:3306/orderdb')
+        engine = create_engine('mysql+pymysql://root:root123@localhost:3306/orderdb?charset=utf8',echo=True)
         db_session = sessionmaker(bind=engine)
         return db_session
 
@@ -63,6 +64,6 @@ class db_util:
 
 db_util1 = db_util()
 db_util1.init_db()
-db_util1.get_cond_order("600036")
+#db_util1.get_cond_order_bystock("600036")
 db_util1.add_condition_order("600036", 1, 1, 100, 17, 2, 3)
 db_util1.update_cond_order(2, 1)
