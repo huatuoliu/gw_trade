@@ -2,7 +2,6 @@
 import os,time,string
 import sys
 import argparse
-import ConfigParser
 from trade_util import *
 
 ######## init parse #############
@@ -17,24 +16,8 @@ parser.add_argument("cmd_args", nargs='*', help="[Buy Stock. Usage: -B stock_cod
 args = parser.parse_args()
 print args.action_type, args.cmd_args
 
-#读取配置文件
-cf = ConfigParser.ConfigParser()
 try:
-    cf.read("config.ini")
-    account = cf.get("common", "account")
-    passwd_encrypted = cf.get("common", "passwd_encrypted") #加密后的密码
-    secuids_sh = cf.get("common", "secuids_sh")  #上海的股东代码
-    secuids_sz = cf.get("common", "secuids_sz") #深圳的股东代码
-    secuids = {
-                1: secuids_sh,
-                0: secuids_sz
-            }
-except Exception, e:
-    print "Read Config.ini Fail: error=", e
-    exit()
-
-try:
-    auto_trade = auto_trade(account, passwd_encrypted, secuids)
+    auto_trade = auto_trade("config.ini")
 except Exception, e:
         print "Exception: msg=", e
         exit()
@@ -42,6 +25,8 @@ except Exception, e:
 if (args.action_type == "B" or args.action_type == "S"):
     try:
         order_id = auto_trade.buy_sell(args.action_type, args.cmd_args[0], args.cmd_args[1],args.cmd_args[2])
+        if order_id == "":
+            print "Buy Or Sell Fail"
     except Exception, e:
         print "Exception: msg=", e
         exit()

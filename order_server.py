@@ -16,6 +16,9 @@ class order_server:
         self.server = SimpleXMLRPCServer(("localhost", 8000))
         self.server.register_function(self.is_even, "is_even")
         self.server.register_function(self.db.add_condition_order, "add_condition_order")
+        self.server.register_function(self.db.get_todo_orders, "get_todo_orders")
+        self.server.register_function(self.db.get_all_orders, "get_all_orders")
+        self.server.register_function(self.db.cancel_cond_order, "cancel_cond_order")
 
     def run(self):
         #thread.start_new_thread(process_order, )

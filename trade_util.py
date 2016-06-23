@@ -6,22 +6,41 @@ import sys
 import re
 import random
 from trade_url import *
+import ConfigParser
 # from crack_vc import crack_vc
 from stock_util import *
 from html_parser import *
 from crack_bmp import *
 
 class auto_trade:
-    def __init__(self, account, passwd_encrypted, secuids):
-        self.account = account
-        self.passwd_encrypted = passwd_encrypted
-        self.secuids = secuids
+    def __init__(self, config_file):
+        self.account = ""
+        self.passwd_encrypted = ""
+        self.secuids = None
         self.stock_code = ""
         self.order_type = ""
         self.price = ""
         self.amount = ""
-        self.gw_trade =  trade_url()
+        self.read_config(config_file)
+        self.gw_trade = trade_url()
         self.prepare()
+
+    def read_config(self, config_file):
+        #读取配置文件
+        cf = ConfigParser.ConfigParser()
+        try:
+            cf.read(config_file)
+            self.account = cf.get("common", "account")
+            self.passwd_encrypted = cf.get("common", "passwd_encrypted") #加密后的密码
+            secuids_sh = cf.get("common", "secuids_sh")  #上海的股东代码
+            secuids_sz = cf.get("common", "secuids_sz") #深圳的股东代码
+            self.secuids = {
+                        1: secuids_sh,
+                        0: secuids_sz
+                    }
+        except Exception, e:
+            print "Read Config.ini Fail: error=", e
+            return
 
     # 登录后获得cookie
     def prepare(self):
@@ -60,7 +79,7 @@ class auto_trade:
     #买卖
     #输入参数：
     def buy_sell(self, order_type,  stock_code, price, amount):
-        ##print "Action of " + stock_code + ": Order_type=" + order_type + ", price=" + price + ", amount=" + amount
+        print "Action of ", stock_code , ": Order_type=", order_type , ", price=" , price , ", amount=" , amount
         ############ post buy order #######################
         stock_ut = stock_util()
         market_id  = stock_ut.get_market(stock_code)
@@ -69,7 +88,7 @@ class auto_trade:
         #print market_id
         secuid = self.secuids[market_id]
         maxBuy = 0
-        post_data={
+        post_data = {
         "type": order_type,
         "market": market_id,
         "up_limit": up_limit,
@@ -87,10 +106,13 @@ class auto_trade:
         #解析出合同编号，如果出错，那么返回""
         #print ret
 
+        #150906130资金不足
+        #150906135股数不够
         #长城的出错都是这个鸟样 alert("-990297020[-990297020]，出错了就反馈空的订单号，看看是不是自己定义一些exception来搞
         reg = re.compile(ur'alert.*?(-\d+)')
         match = reg.search(ret)
         if match:
+            print "Deal Order Fail"
             return ""
 
         #ok，没有问题

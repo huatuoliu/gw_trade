@@ -303,9 +303,10 @@ class Futu():
         return data
 if __name__ == '__main__':
     futu = Futu()
-    print futu.unlock("123123")
+    #print futu.unlock("123123")
     print futu.get_ticker("hk","00700")
-    print futu.get_ticker("us","CMCM")
+    #print futu.get_ticker("us","CMCM")
+    print futu.get_ticker("sh","600036")
 
     # print futu.get_depth("hk", "00700")
     # print futu.get_depth("us", "CMCM")

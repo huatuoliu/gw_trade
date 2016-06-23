@@ -14,6 +14,14 @@ class stock_util:
         else:
             return self.MARKET_ELSE
 
+    def get_market_name(self, stock_code):
+        if (stock_code.startswith("6") or  stock_code.startswith("500") or  stock_code.startswith("550") or stock_code.startswith("510")):
+            return "sh"
+        elif (stock_code.startswith("00") or stock_code.startswith("30") or stock_code.startswith("150") or stock_code.startswith("159")):
+            return "sz"
+        else:
+            return "none"
+
     def get_up_limit(self, price):
         return 0
 

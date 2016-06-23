@@ -11,8 +11,8 @@ class cond_order(Base):
     __tablename__ = "cond_order"
     order_id = Column(Integer, primary_key=True)
     stock_code = Column(String(20))
-    direction = Column(Integer)
-    action = Column(Integer)
+    direction = Column(String)
+    action = Column(String)
     amount = Column(Integer)
     deal_price = Column(Integer)
     compare_price = Column(Integer)
@@ -26,7 +26,7 @@ class db_util:
         self.session = None
 
     def get_db_session(self):
-        engine = create_engine('mysql+pymysql://root:root123@localhost:3306/orderdb?charset=utf8',echo=True)
+        engine = create_engine('mysql+pymysql://root:root123@localhost:3306/orderdb?charset=utf8',echo=False)
         db_session = sessionmaker(bind=engine)
         return db_session
 
@@ -37,8 +37,19 @@ class db_util:
     def close_db(self):
         self.session.close()
 
-    def get_todo_orders(self):
-        order_list = self.session.query(cond_order).filter(cond_order.state == 0).all()
+    def get_todo_orders(self, stock_code):
+        if stock_code != "":
+            order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code, cond_order.state == 0).all()
+        else:
+            order_list = self.session.query(cond_order).filter(cond_order.state == 0).all()
+        print order_list
+        return order_list
+
+    def get_all_orders(self, stock_code):
+        if stock_code != "":
+            order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code).all()
+        else:
+            order_list = self.session.query(cond_order).all()
         print order_list
         return order_list
 
@@ -47,10 +58,10 @@ class db_util:
         print order_list
         return order_list
 
-    def add_condition_order(self, stock_code, direction, action, amount, compare_price, begin_in_day, end_in_day):
+    def add_condition_order(self, stock_code, direction, compare_price, action, deal_price,  amount,  begin_in_day, end_in_day):
         #insert into db
-        print "stock_code=", stock_code, ", direction=", direction, ", action=", action,  ", amount=",  amount, ", compare_price=", compare_price, ", begin_in_day=", begin_in_day, ", end_in_day=", end_in_day
-        new_order = cond_order(order_id=0, stock_code=stock_code, direction=direction, action=action,  amount=amount, compare_price=compare_price,
+        print "stock_code=", stock_code, ", direction=", direction, ", action=", action,  ", amount=",  amount, ",deal_price=", deal_price, "compare_price=", compare_price, ", begin_in_day=", begin_in_day, ", end_in_day=", end_in_day
+        new_order = cond_order(order_id=0, stock_code=stock_code, direction=direction, action=action,  amount=amount, deal_price=deal_price, compare_price=compare_price,
                                begin_in_day=begin_in_day, end_in_day=end_in_day, state=0, insert_time=func.now())
         self.session.add(new_order)
         #print new_order.stock_code
@@ -58,12 +69,16 @@ class db_util:
         return 1
 
     def update_cond_order(self, order_id, state):
-        self.session.query(cond_order).filter(cond_order.order_id  == order_id).update({cond_order.state: state})
+        self.session.query(cond_order).filter(cond_order.order_id == order_id).update({cond_order.state: state})
+        ret = self.session.commit()
+        return ret
+
+    def cancel_cond_order(self, order_id):
+        self.update_cond_order(order_id, 2)
 
 
-
-db_util1 = db_util()
-db_util1.init_db()
+#db_util1 = db_util()
+#db_util1.init_db()
 #db_util1.get_cond_order_bystock("600036")
-db_util1.add_condition_order("600036", 1, 1, 100, 17, 2, 3)
-db_util1.update_cond_order(2, 1)
+#db_util1.add_condition_order("600036", 1, 'B', 100, 17, 17, 2, 3)
+#db_util1.update_cond_order(3, 0)
