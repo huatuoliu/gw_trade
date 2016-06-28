@@ -3,6 +3,24 @@ import os,time,string
 import sys
 import argparse
 from trade_util import *
+import logging
+
+####### init log ################
+logging.basicConfig(level=logging.DEBUG,
+                format='[%(asctime)s][%(filename)s][line:%(lineno)d][%(levelname)s] %(message)s',
+                datefmt='%a, %d %b %Y %H:%M:%S',
+                filename='gw_trade.log',
+                filemode='w')
+
+#################################################################################################
+#定义一个StreamHandler，将INFO级别或更高的日志信息打印到标准错误，并将其添加到当前的日志处理对象#
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+formatter = logging.Formatter('[%(asctime)s][%(filename)s][line:%(lineno)d][%(levelname)s] %(message)s')
+console.setFormatter(formatter)
+logging.getLogger('').addHandler(console)
+#################################################################################################
+
 
 ######## init parse #############
 parser = argparse.ArgumentParser()
@@ -26,9 +44,9 @@ if (args.action_type == "B" or args.action_type == "S"):
     try:
         order_id = auto_trade.buy_sell(args.action_type, args.cmd_args[0], args.cmd_args[1],args.cmd_args[2])
         if order_id == "":
-            print "Buy Or Sell Fail"
+            logging.warn("Buy Or Sell Fail: order_id=%s" % order_id)
     except Exception, e:
-        print "Exception: msg=", e
+        logging.warn("Exception = %s" % e.message)
         exit()
 
     print order_id

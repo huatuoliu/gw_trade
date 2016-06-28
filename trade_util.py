@@ -11,6 +11,7 @@ import ConfigParser
 from stock_util import *
 from html_parser import *
 from crack_bmp import *
+import logging
 
 class auto_trade:
     def __init__(self, config_file):
@@ -39,7 +40,7 @@ class auto_trade:
                         0: secuids_sz
                     }
         except Exception, e:
-            print "Read Config.ini Fail: error=", e
+            #logging.warning()
             return
 
     # 登录后获得cookie
@@ -112,7 +113,7 @@ class auto_trade:
         reg = re.compile(ur'alert.*?(-\d+)')
         match = reg.search(ret)
         if match:
-            print "Deal Order Fail"
+            logging.warn("Deal Order Fail: match=%s" % match)
             return ""
 
         #ok，没有问题
