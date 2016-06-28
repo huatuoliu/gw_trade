@@ -55,7 +55,6 @@ class db_util:
 
     def get_cond_order_bystock(self, stock_code):
         order_list = self.session.query(cond_order).filter(cond_order.stock_code==stock_code).all()
-        print order_list
         return order_list
 
     def add_condition_order(self, stock_code, direction, compare_price, action, deal_price,  amount,  begin_in_day, end_in_day):
@@ -77,8 +76,11 @@ class db_util:
         self.update_cond_order(order_id, 2)
 
 
-#db_util1 = db_util()
-#db_util1.init_db()
-#db_util1.get_cond_order_bystock("600036")
-#db_util1.add_condition_order("600036", 1, 'B', 100, 17, 17, 2, 3)
+db_util1 = db_util()
+db_util1.init_db()
+order_list = db_util1.get_cond_order_bystock("600036")
+for row in order_list:
+    print(row.__dict__)
+
+#db_util1.add_condition_order("600036", 1, 17,  'B', 100,  17, 1430, 1500)
 #db_util1.update_cond_order(3, 0)

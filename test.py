@@ -28,14 +28,17 @@ matrix = [None]*2
 #    matrix[i] = [0]*3
 
 #matrix[0][1] = 123
-matrix[0].append(1233)
-print(matrix)
+#matrix[0].append(1233)
+#print(matrix)
 
-exit()
+#exit()
 test_str = u"alert aaa12312.2。" \
            u"alert aaa12312"
-#reg = re.compile(ur'.*alert.*(\d{4,})')
-reg = re.compile(u'alert.*?(\d+\.\d*)')
+
+test_str = 'alert("-990297020[-990297020]'
+
+reg = re.compile(ur'.*alert.*\[-(\d{6,})\]')
+#reg = re.compile(u'alert.*?(\d+\.\d*)')
 match = reg.search(test_str)
 if match:
     #reg = re.compile(ur'\d{4,}')

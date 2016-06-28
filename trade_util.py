@@ -13,6 +13,8 @@ from html_parser import *
 from crack_bmp import *
 import logging
 
+
+
 class auto_trade:
     def __init__(self, config_file):
         self.account = ""
@@ -110,7 +112,7 @@ class auto_trade:
         #150906130资金不足
         #150906135股数不够
         #长城的出错都是这个鸟样 alert("-990297020[-990297020]，出错了就反馈空的订单号，看看是不是自己定义一些exception来搞
-        reg = re.compile(ur'alert.*?(-\d+)')
+        reg = re.compile(ur'.*alert.*\[-(\d{6,})\]')
         match = reg.search(ret)
         if match:
             logging.warn("Deal Order Fail: match=%s" % match)
