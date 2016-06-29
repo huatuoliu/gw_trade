@@ -26,7 +26,6 @@ class auto_trade:
         self.amount = ""
         self.read_config(config_file)
         self.gw_trade = trade_url()
-        self.prepare()
 
     def read_config(self, config_file):
         #读取配置文件
@@ -48,10 +47,16 @@ class auto_trade:
     # 登录后获得cookie
     def prepare(self):
         ###preprea for login
-        self.gw_trade.prepare("https://trade.cgws.com/cgi-bin/user/Login?function=tradeLogout")
+        (ret, result) = self.gw_trade.prepare("https://trade.cgws.com/cgi-bin/user/Login?function=tradeLogout")
+        if ret != 0:
+            logging.warn("get verified code fail: ret=%d" % ret)
+            return -5
         #get verify code
         #urllib.urlretrieve("https://trade.cgws.com/cgi-bin/img/validateimg", "d://1.jpg", None)
-        tmp_buff = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/img/validateimg", "rand=" + str(random.random()))
+        (ret, tmp_buff) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/img/validateimg", "rand=" + str(random.random()))
+        if ret != 0:
+            logging.warn("get verified code fail: ret=%d" % ret)
+            return -10
         #tmp_buff = gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/img/validateimg", "")0
         verify_pic = open('d://1.jpg', 'wb')
         verify_pic.write(tmp_buff)
@@ -75,7 +80,11 @@ class auto_trade:
         'isSaveAccount':'1',
         'normalpassword':'',
         }
-        ret = self.gw_trade.post_to_url("https://trade.cgws.com/cgi-bin/user/Login", post_data)
+        (ret, result) = self.gw_trade.post_to_url("https://trade.cgws.com/cgi-bin/user/Login", post_data)
+        if ret != 0:
+            return -15
+        #print result
+        return 0
         #print ret
         ############ get main page cookie ##############
 
@@ -132,29 +141,39 @@ class auto_trade:
         post_data={
         "id": order_id
         }
-        ret = self.gw_trade.post_to_url("https://trade.cgws.com/cgi-bin/stock/StockEntrust?function=StockCancel", post_data)
-        print ret
-        return
+        (ret, result) = self.gw_trade.post_to_url("https://trade.cgws.com/cgi-bin/stock/StockEntrust?function=StockCancel", post_data)
+        if ret != 0:
+            logging.warn("get to url fail: ret=%d" % ret)
+            return -5, None
+        #print result
+        return 0
 
     def query_account(self):
-        tmp_buff = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/EntrustQuery?function=MyAccount", "")
-        #print tmp_buff
-        html_parse_inst = html_parser(tmp_buff)
-        return html_parse_inst.get_account()
+        (ret, result) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/EntrustQuery?function=MyAccount", "")
+        if ret != 0:
+            logging.warn("get to url fail: ret=%d" % ret)
+            return -5, None
+        html_parse_inst = html_parser(result)
+        return 0, html_parse_inst.get_account()
 
     def query_order(self):
-        tmp_buff = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/EntrustQuery?function=MyStock&stktype=0", "")
-        #print tmp_buff
-        html_parse_inst = html_parser(tmp_buff)
-        return html_parse_inst.get_holdings()
+        (ret, result) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/EntrustQuery?function=MyStock&stktype=0", "")
+        if ret != 0:
+            logging.warn("get to url fail: ret=%d" % ret)
+            return -5, None
+        html_parse_inst = html_parser(result)
+        return 0, html_parse_inst.get_holdings()
 
     ################# query ongoing order ####################
     def query_ongoing_order(self):
         print "........... query ongoing order ................"
-        tmp_buff = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/StockEntrust?function=StockCancel", "")
-        html_parse_inst = html_parser(tmp_buff)
+        (ret, result) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/StockEntrust?function=StockCancel", "")
+        if ret != 0:
+            logging.warn("get to url fail: ret=%d" % ret)
+            return -5, None
+        html_parse_inst = html_parser(result)
         print "........... query order finish ................."
-        return html_parse_inst.get_onging_orders()
+        return 0, html_parse_inst.get_onging_orders()
 
 
 

@@ -34,11 +34,11 @@ parser.add_argument("cmd_args", nargs='*', help="[Buy Stock. Usage: -B stock_cod
 args = parser.parse_args()
 print args.action_type, args.cmd_args
 
-try:
-    auto_trade = auto_trade("config.ini")
-except Exception, e:
-        print "Exception: msg=", e
-        exit()
+auto_trade = auto_trade("config.ini")
+ret = auto_trade.prepare()
+if ret != 0:
+    logging.warn("auto trade prepare fail: ret=%d" % ret)
+    exit()
 
 if (args.action_type == "B" or args.action_type == "S"):
     try:
@@ -55,12 +55,10 @@ if (args.action_type == "B" or args.action_type == "S"):
     #for  record in ongoing_list:
     #    auto_trade.cancel_order(record["order_id"])
 elif (args.action_type == "Q"):
-    try:
-        holdings = auto_trade.query_order()
-    except Exception, e:
-        print "Exception: msg=", e
-        exit()
-    print holdings
+    (ret, result) = auto_trade.query_order()
+    if ret != 0:
+        logging.warn("query order fail: ret=%d" % ret)
+    print result
 elif (args.action_type == "A"):
     try:
         account_info = auto_trade.query_account()
