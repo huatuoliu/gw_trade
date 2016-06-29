@@ -3,6 +3,7 @@
 import urllib, urllib2, cookielib
 import os,time,string
 import sys
+import logging
 
 class trade_url:
     def __init__(self):
@@ -47,6 +48,17 @@ class trade_url:
         req.add_header('Cookie', self.my_cookie)
         #print req.headers
         #print req.data
-        resp = urllib2.urlopen(req)
+        try:
+            resp = urllib2.urlopen(req, timeout=1)
+        except urllib2.HTTPError, e:
+            logging.warn("server process request error: err_code=%s", e.code)
+            return 5, None
+        except urllib2.URLError, e:
+            logging.warn("reach server error: reason=%s", e.reason)
+            return -10, None
+        except Exception, e:
+            logging.warn("reach server error: reason=%s", e.reason)
+            return -10, None
+
         htm = resp.read()
         return htm
