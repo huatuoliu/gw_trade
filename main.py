@@ -41,44 +41,40 @@ if ret != 0:
     exit()
 
 if (args.action_type == "B" or args.action_type == "S"):
-    try:
-        order_id = auto_trade.buy_sell(args.action_type, args.cmd_args[0], args.cmd_args[1],args.cmd_args[2])
-        if order_id == "":
-            logging.warn("Buy Or Sell Fail: order_id=%s" % order_id)
-    except Exception, e:
-        logging.warn("Exception = %s" % e.message)
-        exit()
-
-    print order_id
+    (ret, result) = auto_trade.buy_sell(args.action_type, args.cmd_args[0], args.cmd_args[1],args.cmd_args[2])
+    if ret == 0:
+        logging.info("Deal OK: order_id=%s" % result)
+    else:
+        logging.warn("Buy Or Sell Fail: ret=%d, ret_msg=%s" % (ret, result))
     #ongoing_list = auto_trade.query_ongoing_order()
     #time.sleep(10)
     #for  record in ongoing_list:
     #    auto_trade.cancel_order(record["order_id"])
 elif (args.action_type == "Q"):
     (ret, result) = auto_trade.query_order()
-    if ret != 0:
+    if ret == 0:
+        logging.info("Query holdings OK: result=%s" % result)
+    else:
         logging.warn("query order fail: ret=%d" % ret)
-    print result
 elif (args.action_type == "A"):
-    try:
-        account_info = auto_trade.query_account()
-    except Exception, e:
-        print "Exception: msg=", e
-        exit()
-    print account_info
+    (ret, result) = auto_trade.query_account()
+    if ret == 0:
+        logging.info("Query account OK: result=%s" % result)
+    else:
+        logging.warn("query account fail: ret=%d" % ret)
 elif (args.action_type == "G"):
-    try:
-        ongoing_list = auto_trade.query_ongoing_order()
-    except Exception, e:
-        print "Exception: msg=", e
-        exit()
-    print ongoing_list
+    (ret, result) = auto_trade.query_ongoing_order()
+    if ret == 0:
+        logging.info("Query Ongoing Order OK: result=%s" % result)
+    else:
+        logging.warn("query ongoing order fail: ret=%d" % ret)
+
 elif (args.action_type == "C"):
-    try:
-        auto_trade.cancel_order(args.cmd_args[0])
-    except Exception, e:
-        print "Exception: msg=", e
-        exit()
+    (ret, result) = auto_trade.cancel_order(args.cmd_args[0])
+    if ret == 0:
+        logging.info("Cancel Order OK: order_id=%s" % args.cmd_args[0])
+    else:
+        logging.warn("query cancel order fail: ret=%d, msg=%s" % (ret, result))
 else:
     print "No Such Action: " + args.action_type
 #except Exception, e:

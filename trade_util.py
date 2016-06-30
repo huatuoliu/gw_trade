@@ -13,7 +13,15 @@ from html_parser import *
 from crack_bmp import *
 import logging
 
-
+class gw_ret_code:
+    # 150906130资金不足
+    # 150906135股数不够
+    # 长城的出错都是这个鸟样 alert("-990297020[-990297020]，出错了就反馈空的订单号，看看是不是自己定义一些exception来搞
+    NOT_ENOUGH_MONEY = 1
+    NOT_ENOUGH_STOCK = 2
+    NOT_DEAL_TIME = 3 #999003088
+    NOT_RIGHT_ORDER_ID = 4 #990268040订单号不对
+    OTHER_ERROR = 999
 
 class auto_trade:
     def __init__(self, config_file):
@@ -114,26 +122,32 @@ class auto_trade:
         "maxBuy": maxBuy,
         "amount": amount
         }
-        ret = self.gw_trade.post_to_url("https://trade.cgws.com/cgi-bin/stock/StockEntrust?function=StockBusiness", post_data)
+        (ret, result) = self.gw_trade.post_to_url("https://trade.cgws.com/cgi-bin/stock/StockEntrust?function=StockBusiness", post_data)
+        if ret != 0:
+            logging.warn("post to url fail: ret=%d" % ret)
+            return -10;
+
+        #判断是否出错
+        reg = re.compile(ur'.*alert.*\[-(\d{6,})\]')
+        match = reg.search(result)
+        if match:
+            if match.group(1) == "150906130":
+                return gw_ret_code.NOT_ENOUGH_MONEY, "资金不足"
+            elif match.group(1) == "150906135":
+                return gw_ret_code.NOT_ENOUGH_STOCK, "可卖股数不够"
+            elif match.group(1) == "999003088":
+                return gw_ret_code.NOT_DEAL_TIME, "结算时段，不能交易"
+            else:
+                return gw_ret_code.OTHER_ERROR, "其他错误"
+
         #解析出合同编号，如果出错，那么返回""
         #print ret
-
-        #150906130资金不足
-        #150906135股数不够
-        #长城的出错都是这个鸟样 alert("-990297020[-990297020]，出错了就反馈空的订单号，看看是不是自己定义一些exception来搞
-        reg = re.compile(ur'.*alert.*\[-(\d{6,})\]')
-        match = reg.search(ret)
-        if match:
-            logging.warn("Deal Order Fail: match=%s" % match)
-            return ""
-
-        #ok，没有问题
         reg = re.compile(ur'alert.*(\d{4})')
-        match = reg.search(ret)
+        match = reg.search(result)
         if match:
-            return match.group(1)
+            return 0, match.group(1)
         else:
-            return ""
+            return -5, "不晓得的错误"
 
     def cancel_order(self, order_id):
         ##print "Action of " + stock_code + ": Order_type=" + order_type + ", price=" + price + ", amount=" + amount
@@ -146,7 +160,16 @@ class auto_trade:
             logging.warn("get to url fail: ret=%d" % ret)
             return -5, None
         #print result
-        return 0
+        # 判断是否出错
+        reg = re.compile(ur'.*alert.*\[-(\d{6,})\]')
+        match = reg.search(result)
+        if match:
+            if match.group(1) == "990268040":
+                return gw_ret_code.NOT_RIGHT_ORDER_ID, "订单号不正确"
+            else:
+                return gw_ret_code.OTHER_ERROR, "其他错误"
+
+        return 0, None
 
     def query_account(self):
         (ret, result) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/EntrustQuery?function=MyAccount", "")

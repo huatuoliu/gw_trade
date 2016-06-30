@@ -60,6 +60,8 @@ class html_parser:
         for i in tmp:
             #print pq(i).find("td").text()
             print pq(i).children().eq(3).text()
+            if pq(i).children().eq(3).text() == "":
+                break
             one_record = {}
             one_record["stock_code"] = pq(i).children().eq(3).text()
             one_record["amount_commit"] = pq(i).children().eq(8).text()
