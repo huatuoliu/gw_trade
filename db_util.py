@@ -6,6 +6,14 @@ from sqlalchemy.ext.declarative import declarative_base
 import pymysql
 import time
 
+#class cond_order_def:
+#    DIRECTION_UP = 1
+#    DIRECTION_UP
+order_direction_def = {"up":"U", "down":"D"}
+order_state_def = {"todo":0, "done":1, "cancel":2}
+order_action_def = {"B":"B", "S":"S"}
+
+Base = declarative_base()
 Base = declarative_base()
 class cond_order(Base):
     __tablename__ = "cond_order"
@@ -37,16 +45,16 @@ class db_util:
     def close_db(self):
         self.session.close()
 
-    def get_todo_orders(self, stock_code):
-        if stock_code != "":
+    def get_todo_orders(self, stock_code=None):
+        if stock_code != None:
             order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code, cond_order.state == 0).all()
         else:
             order_list = self.session.query(cond_order).filter(cond_order.state == 0).all()
         print order_list
         return order_list
 
-    def get_all_orders(self, stock_code):
-        if stock_code != "":
+    def get_all_orders(self, stock_code=None):
+        if stock_code != None:
             order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code).all()
         else:
             order_list = self.session.query(cond_order).all()

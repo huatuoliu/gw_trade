@@ -19,7 +19,8 @@ class gw_ret_code:
     # 长城的出错都是这个鸟样 alert("-990297020[-990297020]，出错了就反馈空的订单号，看看是不是自己定义一些exception来搞
     NOT_ENOUGH_MONEY = 1
     NOT_ENOUGH_STOCK = 2
-    NOT_DEAL_TIME = 3 #999003088
+    SETTLEMENT_TIME = 3 #999003088
+    NOT_DEAL_TIME =4 #990297020
     NOT_RIGHT_ORDER_ID = 4 #990268040订单号不对
     OTHER_ERROR = 999
 
@@ -136,12 +137,14 @@ class auto_trade:
             elif match.group(1) == "150906135":
                 return gw_ret_code.NOT_ENOUGH_STOCK, "可卖股数不够"
             elif match.group(1) == "999003088":
-                return gw_ret_code.NOT_DEAL_TIME, "结算时段，不能交易"
+                return gw_ret_code.SETTLEMENT_TIME, "结算时段，不能交易"
+            elif match.group(1) == "990297020":
+                return gw_ret_code.NOT_DEAL_TIME, "非交易时段"
             else:
                 return gw_ret_code.OTHER_ERROR, "其他错误"
 
         #解析出合同编号，如果出错，那么返回""
-        #print ret
+        print result.decode("gbk")
         reg = re.compile(ur'alert.*(\d{4})')
         match = reg.search(result)
         if match:

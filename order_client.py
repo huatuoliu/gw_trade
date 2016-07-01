@@ -31,7 +31,6 @@ if (args.action_type == "B" or args.action_type == "S"):
     #    auto_trade.cancel_order(record["order_id"])
 elif (args.action_type == "Q"):
     try:
-
         if len(args.cmd_args) == 0:
             stock_code = ""
         else:
