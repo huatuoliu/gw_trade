@@ -47,25 +47,51 @@ class db_util:
 
     def get_todo_orders(self, stock_code=None):
         if stock_code != None:
-            order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code, cond_order.state == 0).all()
+            order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code, cond_order.state == order_state_def["todo"]).all()
         else:
-            order_list = self.session.query(cond_order).filter(cond_order.state == 0).all()
-        print order_list
-        return order_list
+            order_list = self.session.query(cond_order).filter(cond_order.state == order_state_def["todo"]).all()
+        ret_order_list = []
+        for row in order_list:
+            tmp={}
+            tmp["order_id"] = row.order_id
+            tmp["stock_code"] = row.stock_code
+            tmp["direction"] = row.direction
+            tmp["action"] = row.action
+            tmp["amount"] = row.amount
+            tmp["deal_price"] = row.deal_price
+            tmp["compare_price"] = row.compare_price
+            tmp["begin_in_day"] = row.begin_in_day
+            tmp["end_in_day"] = row.end_in_day
+            tmp["state"] = row.state
+            tmp["insert_time"] = row.insert_time
+            tmp["order_id"] = row.order_id
+            tmp["update_time"] = row.update_time
+            ret_order_list.append(tmp)
+        return ret_order_list
+
 
     def get_all_orders(self, stock_code=None):
         if stock_code != None:
             order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code).all()
         else:
             order_list = self.session.query(cond_order).all()
-
         ret_order_list = []
         for row in order_list:
             tmp={}
             tmp["order_id"] = row.order_id
-            tmp
+            tmp["stock_code"] = row.stock_code
+            tmp["direction"] = row.direction
+            tmp["action"] = row.action
+            tmp["amount"] = row.amount
+            tmp["deal_price"] = row.deal_price
+            tmp["compare_price"] = row.compare_price
+            tmp["begin_in_day"] = row.begin_in_day
+            tmp["end_in_day"] = row.end_in_day
+            tmp["state"] = row.state
+            tmp["insert_time"] = row.insert_time
+            tmp["order_id"] = row.order_id
+            tmp["update_time"] = row.update_time
             ret_order_list.append(tmp)
-        print ret_order_list
         return ret_order_list
 
     def get_cond_order_bystock(self, stock_code):
@@ -88,14 +114,15 @@ class db_util:
         return ret
 
     def cancel_cond_order(self, order_id):
-        self.update_cond_order(order_id, 2)
+        self.update_cond_order(order_id, order_state_def["cancel"])
 
 
 db_util1 = db_util()
 db_util1.init_db()
-order_list = db_util1.get_cond_order_bystock("600036")
+order_list = db_util1.get_cond_order_bystock("159915")
+print order_list
 for row in order_list:
-    print(row.__dict__)
-
+    #print(row.__dict__)
+    print(type(row).__name__)
 #db_util1.add_condition_order("600036", 1, 17,  'B', 100,  17, 1430, 1500)
 #db_util1.update_cond_order(3, 0)

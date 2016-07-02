@@ -6,6 +6,9 @@ import re
 
 a=(1, 2, 3)
 print a
+b=['黑莓手机一代','黑莓手机二代']
+mob = ['魅族手机', b,'锤子手机']
+print mob
 
 exit()
 def get_vcode(vcode_file, decode_file):

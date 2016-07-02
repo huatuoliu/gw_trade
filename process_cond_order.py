@@ -22,9 +22,6 @@ console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 #################################################################################################
 
-
-
-
 class process_cond_order():
     def __init__(self):
         self.last_dbcheck_time = 0 #最后一次查看db的时间
@@ -37,6 +34,18 @@ class process_cond_order():
             logging.warn("auto trade prepare fail: ret=%d" % ret)
             return None
 
+    #检查是否是可以出发的时间
+    def check_fire_time(self, begin_in_day, end_in_day):
+        localtime = time.localtime(time.time())
+        now_hour = localtime.tm_hour
+        now_min = localtime.tm_min
+        logging.info("checking fire time: begin_in_day=%d, end_in_day=%d, now_hour=%d, now_min=%d" % (begin_in_day, end_in_day, now_hour, now_min))
+        formatted_time = now_hour*100 + now_min
+        if formatted_time > begin_in_day and formatted_time < end_in_day:
+            return True
+        else:
+            return False
+
     #检查价格并且下单
     def check_price_do(self):
         ft_api = Futu()
@@ -44,8 +53,9 @@ class process_cond_order():
             xs_data  = ft_api.get_ticker(stock_util().get_market_name(row.stock_code), row.stock_code)
             now_price = xs_data['Cur']
             logging.info("Checking Cond Order: now_price=%d, row_compare_price=%f, row.direction=%s" % (now_price, row.compare_price, row.direction))
-            if now_price >= row.compare_price and row.direction == order_direction_def["up"] \
-                    or  now_price <= row.compare_price and row.direction == order_direction_def["down"]:
+            if (now_price >= row.compare_price and row.direction == order_direction_def["up"] \
+                    or now_price <= row.compare_price and row.direction == order_direction_def["down"]) \
+                    and self.check_fire_time(row.begin_in_day, row.end_in_day):
                 logging.info("submit order: row.order_id=%s, row.action =%s, , row.deal_price=%f,  row.amount=%d" % (row.order_id, row.action, row.deal_price,  row.amount))
                 (ret, result) = self.auto_trade.buy_sell(row.action, row.stock_code, row.deal_price, row.amount)
                 if ret != 0:
@@ -57,7 +67,7 @@ class process_cond_order():
     def load_from_db(self):
         self.todo_orders = self.order_db.get_todo_orders()
         for row in self.todo_orders:
-            logging.info( "Load from db: stock_code=%s, , insert_time=%s" %(row.stock_code, row.insert_time))
+            logging.info("Load from db: stock_code=%s, insert_time=%s" % (row["stock_code"], row["insert_time"])
 
     def run(self):
         while True:
