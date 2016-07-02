@@ -3,11 +3,11 @@ import os,time,string
 import sys
 import argparse
 import xmlrpclib
-proxy = xmlrpclib.ServerProxy("http://localhost:8000/")
-#print str(proxy.is_even(12))
+proxy = xmlrpclib.ServerProxy("http://localhost:8000/", allow_none=True)
+#print proxy.is_even(12)
 #proxy.add_condition_order("600036", 1, 1, 100, 17, 2, 3)
 
-
+#exit()
 ######## init parse #############
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--action_type", choices=['B', 'S', 'Q', 'G', 'C'], help="B: Buy; S: Sell; Q: All Cond Order; G: Query Ongoing Cond Order; C: Cancel Order")
@@ -32,14 +32,14 @@ if (args.action_type == "B" or args.action_type == "S"):
 elif (args.action_type == "Q"):
     try:
         if len(args.cmd_args) == 0:
-            stock_code = ""
+            stock_code = None
         else:
             stock_code = args.cmd_args[0]
         order_list = proxy.get_all_orders(stock_code)
+        print order_list
     except Exception, e:
         print "Exception: msg=", e
         exit()
-    print order_list
 elif (args.action_type == "G"):
     try:
         if len(args.cmd_args) == 0:

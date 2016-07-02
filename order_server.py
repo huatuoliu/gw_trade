@@ -10,10 +10,11 @@ class order_server:
         self.db.init_db()
         self.init_server()
     def is_even(self, n):
-        return n % 2 == 0
+        test = {"a" : 1,  "b": 1.5}
+        return test
 
     def init_server(self):
-        self.server = SimpleXMLRPCServer(("localhost", 8000))
+        self.server = SimpleXMLRPCServer(("localhost", 8000), allow_none=True)
         self.server.register_function(self.is_even, "is_even")
         self.server.register_function(self.db.add_condition_order, "add_condition_order")
         self.server.register_function(self.db.get_todo_orders, "get_todo_orders")

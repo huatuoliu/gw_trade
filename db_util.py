@@ -58,8 +58,15 @@ class db_util:
             order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code).all()
         else:
             order_list = self.session.query(cond_order).all()
-        print order_list
-        return order_list
+
+        ret_order_list = []
+        for row in order_list:
+            tmp={}
+            tmp["order_id"] = row.order_id
+            tmp
+            ret_order_list.append(tmp)
+        print ret_order_list
+        return ret_order_list
 
     def get_cond_order_bystock(self, stock_code):
         order_list = self.session.query(cond_order).filter(cond_order.stock_code==stock_code).all()

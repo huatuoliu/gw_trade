@@ -3,6 +3,11 @@
 import os, sys
 import re
 #import Image
+
+a=(1, 2, 3)
+print a
+
+exit()
 def get_vcode(vcode_file, decode_file):
     cmd = r'"D:\Program Files\Tesseract-OCR\tesseract.exe "' + " " +  vcode_file + " " + decode_file
     print cmd
