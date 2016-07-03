@@ -42,9 +42,6 @@
 主要功能通过两个脚本实现。main.py和rmi_client.py。请执行-h可以看到使用说明。
 
 1. python main.py -h 
-2. python rmi_client.py -h 。 其中
-
-
-8. 进入gw_trade目录， 执行python main.py –h ，可以看到使用说明。其中要说明的是begin_in_day和end_in_day的格式，例如：9点30，用整数930表示，14点30用1430表示。
+2. python rmi_client.py -h。 其中要说明的是begin_in_day和end_in_day的格式，例如：9点30，用整数930表示，14点30用1430表示。
 
 
