@@ -1,21 +1,23 @@
-
+create database orderdb;
 use orderdb;
 CREATE TABLE `cond_order` (
 	`order_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-	`stock_code` VARCHAR(30) NOT NULL DEFAULT '',
-	`direction` CHAR(1) NOT NULL,
-	`action` CHAR(1) NOT NULL,
-	`amount` INT(10) NOT NULL DEFAULT '100',
-	`compare_price` FLOAT NOT NULL DEFAULT '0',
-	`begin_in_day` INT(10) NOT NULL DEFAULT '0',
-	`end_in_day` INT(10) NOT NULL DEFAULT '0',
-	`state` INT(10) NOT NULL DEFAULT '0',
+	`stock_code` VARCHAR(30) NOT NULL DEFAULT '' COMMENT '股票代码',
+	`direction` CHAR(1) NOT NULL COMMENT 'U：高于指定价格；D：低于指定价格',
+	`action` CHAR(1) NOT NULL COMMENT 'B：买；S：卖',
+	`amount` INT(10) NOT NULL DEFAULT '100' COMMENT '订单数量',
+	`compare_price` FLOAT NOT NULL DEFAULT '0' COMMENT '比较价格。即高于或低于的价格',
+	`begin_in_day` INT(10) NOT NULL DEFAULT '0' COMMENT '条件单执行开始时间',
+	`end_in_day` INT(10) NOT NULL DEFAULT '0' COMMENT '条件单执行结束时间',
+	`state` INT(10) NOT NULL DEFAULT '0' COMMENT '0：等待提交；1：完成；2：取消',
 	`update_time` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
 	`insert_time` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`deal_price` FLOAT NOT NULL DEFAULT '0',
+	`deal_price` FLOAT NOT NULL DEFAULT '0' COMMENT '下单价格',
 	PRIMARY KEY (`order_id`)
 )
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
-AUTO_INCREMENT=16
+AUTO_INCREMENT=19
+;
+
 ;

@@ -67,7 +67,7 @@ class process_cond_order():
     def load_from_db(self):
         self.todo_orders = self.order_db.get_todo_orders()
         for row in self.todo_orders:
-            logging.info("Load from db: stock_code=%s, insert_time=%s" % (row["stock_code"], row["insert_time"])
+            logging.info("Load from db: stock_code=%s, insert_time=%s" % (row.stock_code, row.insert_time))
 
     def run(self):
         while True:

@@ -37,7 +37,7 @@ elif (args.action_type == "Q"):
             stock_code = None
         else:
             stock_code = args.cmd_args[0]
-        order_list = proxy.get_all_orders(stock_code)
+        order_list = proxy.rmi_get_all_orders(stock_code)
         print order_list
     except Exception, e:
         print "Exception: msg=", e
@@ -48,7 +48,7 @@ elif (args.action_type == "G"):
             stock_code = None
         else:
             stock_code = args.cmd_args[0]
-        order_list = proxy.get_todo_orders(stock_code)
+        order_list = proxy.rmi_get_todo_orders(stock_code)
         print order_list
     except Exception, e:
         print "Exception: msg=", e

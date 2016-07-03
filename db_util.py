@@ -3,6 +3,7 @@
 from sqlalchemy import Column, String, Integer, Float, TIMESTAMP,  create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import ConfigParser
 import pymysql
 import time
 
@@ -32,9 +33,24 @@ class cond_order(Base):
 class db_util:
     def __init__(self):
         self.session = None
+        self.user = ""
+        self.password = ""
+        self.read_config("config.ini")
+    def read_config(self, config_file):
+        # 读取配置文件
+        cf = ConfigParser.ConfigParser()
+        try:
+            cf.read(config_file)
+            self.user = cf.get("mysql", "user")
+            self.password  = cf.get("mysql", "password")
+
+        except Exception, e:
+            # logging.warning()
+            return
 
     def get_db_session(self):
-        engine = create_engine('mysql+pymysql://root:root123@localhost:3306/orderdb?charset=utf8',echo=False)
+        mysql_uri_str = 'mysql+pymysql://' + self.user + ':' + self.password + '@localhost:3306/orderdb?charset=utf8'
+        engine = create_engine(mysql_uri_str, echo=False)
         db_session = sessionmaker(bind=engine)
         return db_session
 
@@ -50,9 +66,15 @@ class db_util:
             order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code, cond_order.state == order_state_def["todo"]).all()
         else:
             order_list = self.session.query(cond_order).filter(cond_order.state == order_state_def["todo"]).all()
+
+        return order_list
+
+
+    def rmi_get_todo_orders(self, stock_code=None):
+        order_list = self.get_todo_orders(stock_code)
         ret_order_list = []
         for row in order_list:
-            tmp={}
+            tmp = {}
             tmp["order_id"] = row.order_id
             tmp["stock_code"] = row.stock_code
             tmp["direction"] = row.direction
@@ -69,15 +91,18 @@ class db_util:
             ret_order_list.append(tmp)
         return ret_order_list
 
-
     def get_all_orders(self, stock_code=None):
         if stock_code != None:
             order_list = self.session.query(cond_order).filter(cond_order.stock_code == stock_code).all()
         else:
             order_list = self.session.query(cond_order).all()
+        return order_list
+
+    def rmi_get_all_orders(self, stock_code=None):
+        order_list = self.get_all_orders(stock_code)
         ret_order_list = []
         for row in order_list:
-            tmp={}
+            tmp = {}
             tmp["order_id"] = row.order_id
             tmp["stock_code"] = row.stock_code
             tmp["direction"] = row.direction
