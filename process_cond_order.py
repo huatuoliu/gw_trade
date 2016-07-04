@@ -49,7 +49,7 @@ class process_cond_order():
     #检查价格并且下单
     def check_price_do(self):
         ft_api = Futu()
-        for row in self.todo_orders:
+        for row in self.todo_orders[:]:
             xs_data  = ft_api.get_ticker(stock_util().get_market_name(row.stock_code), row.stock_code)
             now_price = xs_data['Cur']
             logging.info("Checking Cond Order: now_price=%d, row_compare_price=%f, row.direction=%s" % (now_price, row.compare_price, row.direction))
@@ -61,6 +61,7 @@ class process_cond_order():
                 if ret != 0:
                     logging.warn("deal fail: ret=%d, action=%s, stock_code=%s, deal_price=%f, amount=%d" % (ret, row.action, row.stock_code, row.deal_price, row.amount))
                     continue
+                self.todo_orders.remove(row)
                 self.order_db.update_cond_order(row.order_id, order_state_def["done"])
 
     #从数据库load数据到本地进行访问

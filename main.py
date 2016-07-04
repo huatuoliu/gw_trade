@@ -25,8 +25,8 @@ logging.getLogger('').addHandler(console)
 ######## init parse #############
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--action_type", choices=['B', 'S', 'Q', 'A', 'G', 'C'], help="B: Buy; S: Sell; Q: Query Holdings; A: Query Account Info; G: Query Ongoings; C: Cancel Order")
-parser.add_argument("cmd_args", nargs='*', help="[Buy Stock. Usage: -B stock_code price amount. e.g. -tB 600036  14.550 1000]" \
-                                                "  [Sell Stock. Usage: -S  stock_code price amount. e.g. -tS 600036  14.550 1000]" \
+parser.add_argument("cmd_args", nargs='*', help="[Buy Stock. Usage: -B stock_code price amount. e.g. -tB 159915  2 100]" \
+                                                "  [Sell Stock. Usage: -S  stock_code price amount. e.g. -tS 159915 2 100]" \
                                                 "  [Query Account Info. Usage: -tA]" \
                                                 "  [Query Holding Stock. Usage: -tQ]" \
                                                 "  [Query OnGoing Order. Usage: -tG]" \
