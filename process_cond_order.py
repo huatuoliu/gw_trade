@@ -52,7 +52,7 @@ class process_cond_order():
         for row in self.todo_orders[:]:
             xs_data  = ft_api.get_ticker(stock_util().get_market_name(row.stock_code), row.stock_code)
             now_price = xs_data['Cur']
-            logging.info("Checking Cond Order: now_price=%d, row_compare_price=%f, row.direction=%s" % (now_price, row.compare_price, row.direction))
+            logging.info("Checking Cond Order: now_price=%f, row_compare_price=%f, row.direction=%s" % (now_price, row.compare_price, row.direction))
             if (now_price >= row.compare_price and row.direction == order_direction_def["up"] \
                     or now_price <= row.compare_price and row.direction == order_direction_def["down"]) \
                     and self.check_fire_time(row.begin_in_day, row.end_in_day):

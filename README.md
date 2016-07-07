@@ -10,7 +10,7 @@
 2. 安装需要的库，建议采用pycharm工具搞定这些缺少的库
 	1.	大部分库都可以用pycharm自动帮忙安装，除了pillow。
 	2.	pillow:pycharm中安装PIL失败。PIL只有32位的库，有人写了64位的PILLOW来替代，安装这个即可。调用还是用from PIL import *。详情请见[http://www.itnose.net/detail/6190636.html]
-3. 安装mysql，创建用户，执行代码目录里的create_table.sql.txt里的语句。
+3. 安装mysql，创建用户，执行代码目录里的create_table.txt里的语句。
 4. 进入gw_trade目录，添加配置文件，config.ini。内容如下：
     
 	[common]
