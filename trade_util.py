@@ -21,7 +21,9 @@ class gw_ret_code:
     NOT_ENOUGH_STOCK = 2
     SETTLEMENT_TIME = 3 #999003088
     NOT_DEAL_TIME =4 #990297020
-    NOT_RIGHT_ORDER_ID = 4 #990268040订单号不对
+    NOT_RIGHT_ORDER_ID = 5 #990268040订单号不对
+
+    LOGIN_FAIL = 100 #login fail
     OTHER_ERROR = 999
 
 class auto_trade:
@@ -100,6 +102,10 @@ class auto_trade:
     #买卖
     #输入参数：
     def buy_sell(self, order_type,  stock_code, price, amount):
+        ret = self.prepare()
+        if ret != 0:
+            return  gw_ret_code.LOGIN_FAIL, "登录失败"
+
         print "Action of ", stock_code , ": Order_type=", order_type , ", price=" , price , ", amount=" , amount
         ############ post buy order #######################
         stock_ut = stock_util()
@@ -153,6 +159,9 @@ class auto_trade:
             return -5, "不晓得的错误"
 
     def cancel_order(self, order_id):
+        ret = self.prepare()
+        if ret != 0:
+            return  gw_ret_code.LOGIN_FAIL, "登录失败"
         ##print "Action of " + stock_code + ": Order_type=" + order_type + ", price=" + price + ", amount=" + amount
         ############ post buy order #######################
         post_data={
@@ -175,6 +184,9 @@ class auto_trade:
         return 0, None
 
     def query_account(self):
+        ret = self.prepare()
+        if ret != 0:
+            return  gw_ret_code.LOGIN_FAIL, "登录失败"
         (ret, result) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/EntrustQuery?function=MyAccount", "")
         if ret != 0:
             logging.warn("get to url fail: ret=%d" % ret)
@@ -183,6 +195,9 @@ class auto_trade:
         return 0, html_parse_inst.get_account()
 
     def query_order(self):
+        ret = self.prepare()
+        if ret != 0:
+            return  gw_ret_code.LOGIN_FAIL, "登录失败"
         (ret, result) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/EntrustQuery?function=MyStock&stktype=0", "")
         if ret != 0:
             logging.warn("get to url fail: ret=%d" % ret)
@@ -192,6 +207,9 @@ class auto_trade:
 
     ################# query ongoing order ####################
     def query_ongoing_order(self):
+        ret = self.prepare()
+        if ret != 0:
+            return  gw_ret_code.LOGIN_FAIL, "登录失败"
         print "........... query ongoing order ................"
         (ret, result) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/StockEntrust?function=StockCancel", "")
         if ret != 0:

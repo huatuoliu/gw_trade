@@ -141,15 +141,15 @@ class db_util:
         self.update_cond_order(order_id, order_state_def["cancel"])
 
 
-db_util1 = db_util()
-db_util1.init_db()
+#db_util1 = db_util()
+#db_util1.init_db()
 
-while True:
-    order_list = db_util1.get_todo_orders()
-    for row in order_list:
+#while True:
+#    order_list = db_util1.get_todo_orders()
+#    for row in order_list:
         #print(row.__dict__)
-        print(row.__dict__)
-    print "*************************************"
-    time.sleep(5)
+#        print(row.__dict__)
+#    print "*************************************"
+#    time.sleep(5)
 #db_util1.add_condition_order("600036", 1, 17,  'B', 100,  17, 1430, 1500)
 #db_util1.update_cond_order(3, 0)

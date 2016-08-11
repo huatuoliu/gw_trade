@@ -1,5 +1,5 @@
 # coding:utf-8
-import threading
+
 import time
 from db_util import *
 from ftnn_api import *
@@ -29,10 +29,6 @@ class process_cond_order():
         self.order_db = db_util()
         self.order_db.init_db()
         self.auto_trade = auto_trade("config.ini")
-        ret = self.auto_trade.prepare()
-        if ret != 0:
-            logging.warn("auto trade prepare fail: ret=%d" % ret)
-            return None
 
     #检查是否是可以出发的时间
     def check_fire_time(self, begin_in_day, end_in_day):
@@ -67,12 +63,14 @@ class process_cond_order():
     #从数据库load数据到本地进行访问
     def load_from_db(self):
         self.todo_orders = self.order_db.get_todo_orders()
+        print "Loading From DB"
         for row in self.todo_orders:
             logging.info("Load from db: stock_code=%s, insert_time=%s" % (row.stock_code, row.insert_time))
 
     def run(self):
         while True:
-            if self.last_dbcheck_time + 60 < time.time():
+            if self.last_dbcheck_time + 5 < time.time():
+                print "Check TIme"
                 self.load_from_db()
                 self.last_dbcheck_time = time.time()
             self.check_price_do()

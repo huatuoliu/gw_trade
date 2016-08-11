@@ -35,10 +35,6 @@ args = parser.parse_args()
 print args.action_type, args.cmd_args
 
 auto_trade = auto_trade("config.ini")
-ret = auto_trade.prepare()
-if ret != 0:
-    logging.warn("auto trade prepare fail: ret=%d" % ret)
-    exit()
 
 if (args.action_type == "B" or args.action_type == "S"):
     (ret, result) = auto_trade.buy_sell(args.action_type, args.cmd_args[0], args.cmd_args[1],args.cmd_args[2])
