@@ -40,14 +40,14 @@ class html_parser:
                 one_record["balance"] = float(match.group(1))
             else:
                 one_record["balance"] = 0
-                print "html parse error"
+                print("html parse error")
 
             match = reg.search(pq(i).children().eq(1).text())
             if match:
                 one_record["availble"] = float(match.group(1))
             else:
                 one_record["availble"] = 0
-                print "html parse error"
+                print("html parse error")
 
             tmp_info.append(one_record)
 
@@ -59,7 +59,7 @@ class html_parser:
         tmp = jp("#tab1 tbody tr")
         for i in tmp:
             #print pq(i).find("td").text()
-            print pq(i).children().eq(3).text()
+            print(pq(i).children().eq(3).text())
             if pq(i).children().eq(3).text() == "":
                 break
             one_record = {}

@@ -6,6 +6,23 @@ class stock_util:
         self.MARKET_SZ = 0
         self.MARKET_ELSE = 10
 
+    '''
+        def get_market(self, stock_code):
+            if stock_code.startswith("SH"):
+                return self.MARKET_SH
+            elif stock_code.startswith("SZ"):
+                return self.MARKET_SZ
+            else:
+                return self.MARKET_ELSE
+
+        def get_market_name(self, stock_code):
+            if stock_code.startswith("SH"):
+                return "sh"
+            elif stock_code.startswith("SZ"):
+                return "sz"
+            else:
+                return "none"
+    '''
     def get_market(self, stock_code):
         if (stock_code.startswith("6") or  stock_code.startswith("500") or  stock_code.startswith("550") or stock_code.startswith("510")):
             return self.MARKET_SH

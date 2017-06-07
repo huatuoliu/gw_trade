@@ -1,12 +1,14 @@
 #!/usr/bin/python
 # coding=utf-8
-import urllib, urllib2, cookielib
+import urllib
+#import urllib2
+#import cookielib
 import os,time,string
 import sys
 import re
 import random
 from trade_url import *
-import ConfigParser
+import configparser
 # from crack_vc import crack_vc
 from stock_util import *
 from html_parser import *
@@ -22,6 +24,7 @@ class gw_ret_code:
     SETTLEMENT_TIME = 3 #999003088
     NOT_DEAL_TIME =4 #990297020
     NOT_RIGHT_ORDER_ID = 5 #990268040订单号不对
+    NOT_CORRECT_PRICE = 6  #990265060价位不对
 
     LOGIN_FAIL = 100 #login fail
     OTHER_ERROR = 999
@@ -40,7 +43,7 @@ class auto_trade:
 
     def read_config(self, config_file):
         #读取配置文件
-        cf = ConfigParser.ConfigParser()
+        cf = configparser.ConfigParser()
         try:
             cf.read(config_file)
             self.account = cf.get("common", "account")
@@ -51,7 +54,7 @@ class auto_trade:
                         1: secuids_sh,
                         0: secuids_sz
                     }
-        except Exception, e:
+        except Exception as e:
             #logging.warning()
             return
 
@@ -106,7 +109,7 @@ class auto_trade:
         if ret != 0:
             return  gw_ret_code.LOGIN_FAIL, "登录失败"
 
-        print "Action of ", stock_code , ": Order_type=", order_type , ", price=" , price , ", amount=" , amount
+        print("Action of ", stock_code , ": Order_type=", order_type , ", price=" , price , ", amount=" , amount)
         ############ post buy order #######################
         stock_ut = stock_util()
         market_id  = stock_ut.get_market(stock_code)
@@ -135,8 +138,8 @@ class auto_trade:
             return -10;
 
         #判断是否出错
-        reg = re.compile(ur'.*alert.*\[-(\d{6,})\]')
-        match = reg.search(result)
+        reg = re.compile('.*alert.*\[-(\d{6,})\]')
+        match = reg.search(result.decode('gb2312'))
         if match:
             if match.group(1) == "150906130":
                 return gw_ret_code.NOT_ENOUGH_MONEY, "资金不足"
@@ -146,12 +149,15 @@ class auto_trade:
                 return gw_ret_code.SETTLEMENT_TIME, "结算时段，不能交易"
             elif match.group(1) == "990297020":
                 return gw_ret_code.NOT_DEAL_TIME, "非交易时段"
+            elif match.group(1) == "990265060":
+                return gw_ret_code.NOT_CORRECT_PRICE, "价位不对"
             else:
+                print( "not deal error: msg=%s" % (match.group(1)))
                 return gw_ret_code.OTHER_ERROR, "其他错误"
 
         #解析出合同编号，如果出错，那么返回""
-        print result.decode("gbk")
-        reg = re.compile(ur'alert.*(\d{4})')
+        print(result.decode("gbk"))
+        reg = re.compile('alert.*(\d{4})')
         match = reg.search(result)
         if match:
             return 0, match.group(1)
@@ -173,7 +179,7 @@ class auto_trade:
             return -5, None
         #print result
         # 判断是否出错
-        reg = re.compile(ur'.*alert.*\[-(\d{6,})\]')
+        reg = re.compile('.*alert.*\[-(\d{6,})\]')
         match = reg.search(result)
         if match:
             if match.group(1) == "990268040":
@@ -210,13 +216,13 @@ class auto_trade:
         ret = self.prepare()
         if ret != 0:
             return  gw_ret_code.LOGIN_FAIL, "登录失败"
-        print "........... query ongoing order ................"
+        print("........... query ongoing order ................")
         (ret, result) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/StockEntrust?function=StockCancel", "")
         if ret != 0:
             logging.warn("get to url fail: ret=%d" % ret)
             return -5, None
         html_parse_inst = html_parser(result)
-        print "........... query order finish ................."
+        print("........... query order finish .................")
         return 0, html_parse_inst.get_onging_orders()
 
 

@@ -3,7 +3,7 @@
 from sqlalchemy import Column, String, Integer, Float, TIMESTAMP,  create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-import ConfigParser
+import configparser
 import pymysql
 import time
 
@@ -38,14 +38,14 @@ class db_util:
         self.read_config("config.ini")
     def read_config(self, config_file):
         # 读取配置文件
-        cf = ConfigParser.ConfigParser()
+        cf = configparser.ConfigParser()
         try:
             cf.read(config_file)
             self.user = cf.get("mysql", "user")
             self.password  = cf.get("mysql", "password")
 
-        except Exception, e:
-            # logging.warning()
+        except Exception as e:
+            print("Read config error")
             return
 
     def get_db_session(self):
@@ -124,7 +124,7 @@ class db_util:
 
     def add_condition_order(self, stock_code, direction, compare_price, action, deal_price,  amount,  begin_in_day, end_in_day):
         #insert into db
-        print "stock_code=", stock_code, ", direction=", direction, ", action=", action,  ", amount=",  amount, ",deal_price=", deal_price, "compare_price=", compare_price, ", begin_in_day=", begin_in_day, ", end_in_day=", end_in_day
+        print("stock_code=", stock_code, ", direction=", direction, ", action=", action,  ", amount=",  amount, ",deal_price=", deal_price, "compare_price=", compare_price, ", begin_in_day=", begin_in_day, ", end_in_day=", end_in_day)
         new_order = cond_order(order_id=0, stock_code=stock_code, direction=direction, action=action,  amount=amount, deal_price=deal_price, compare_price=compare_price,
                                begin_in_day=begin_in_day, end_in_day=end_in_day, state=0, insert_time=func.now())
         self.session.add(new_order)

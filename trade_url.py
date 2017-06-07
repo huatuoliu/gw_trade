@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # coding=utf-8
-import urllib, urllib2, cookielib
+import urllib
+from urllib.parse import urlencode
+import http.cookiejar
 import os,time,string
 import sys
 import logging
@@ -12,17 +14,17 @@ class trade_url:
 
     #########################get html and base cookie ######################
     def prepare(self, first_url):
-        tmp_cookie = cookielib.CookieJar()
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(tmp_cookie))
+        tmp_cookie = http.cookiejar.CookieJar()
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(tmp_cookie))
         try:
             response = opener.open(self.logout_url, timeout=3)
-        except urllib2.HTTPError, e:
+        except urllib.HTTPError as e:
             logging.warn("server process request error: err_code=%s", e.code)
             return -5, None
-        except urllib2.URLError, e:
+        except urllib.URLError as e:
             logging.warn("reach server error: reason=%s", e.reason)
             return -10, None
-        except Exception, e:
+        except Exception as e:
             logging.warn("other exception: msg=%s", e.message)
             return -100, None
 
@@ -33,9 +35,9 @@ class trade_url:
 
     ########## post data to request_url ##############
     def post_to_url(self, request_url, post_data):
-        post_encode = urllib.urlencode(post_data)
+        post_encode = urlencode(post_data).encode()
         #print post_encode
-        req = urllib2.Request(
+        req = urllib.request.Request(
             url=request_url,
             data=post_encode
             )
@@ -43,15 +45,15 @@ class trade_url:
         #print req.headers
         #print req.data
         try:
-            resp = urllib2.urlopen(req, timeout=3)
-        except urllib2.HTTPError, e:
+            resp = urllib.request.urlopen(req, timeout=3)
+        except urllib.error.HTTPError as e:
             logging.warn("server process request error: err_code=%s", e.code)
             return -5, None
-        except urllib2.URLError, e:
+        except urllib.error.URLError as e:
             logging.warn("reach server error: reason=%s", e.reason)
             return -10, None
-        except Exception, e:
-            logging.warn("other exception: msg=%s", e.message)
+        except Exception as e:
+            logging.warn("other exception: msg=%s", e.__str__())
             return -100, None
 
         htm = resp.read()
@@ -65,21 +67,21 @@ class trade_url:
             tmp_url = request_url + "?" + get_data
         #print tmp_url
         #print self.my_cookie
-        req = urllib2.Request(
+        req = urllib.request.Request(
             url=request_url,
             )
         req.add_header('Cookie', self.my_cookie)
         #print req.headers
         #print req.data
         try:
-            resp = urllib2.urlopen(req, timeout=3)
-        except urllib2.HTTPError, e:
+            resp = urllib.request.urlopen(req, timeout=3)
+        except urllib.HTTPError as e:
             logging.warn("server process request error: err_code=%s", e.code)
             return -5, None
-        except urllib2.URLError, e:
+        except urllib.URLError as e:
             logging.warn("reach server error: reason=%s", e.reason)
             return -10, None
-        except Exception, e:
+        except Exception as e:
             logging.warn("other exception: msg=%s", e.message)
             return -100, None
 

@@ -2,9 +2,9 @@
 
 import time
 from db_util import *
-from ftnn_api import *
 from stock_util import *
 from trade_util import *
+from openft.open_quant_context import *
 
 ####### init log ################
 logging.basicConfig(level=logging.DEBUG,
@@ -29,6 +29,7 @@ class process_cond_order():
         self.order_db = db_util()
         self.order_db.init_db()
         self.auto_trade = auto_trade("config.ini")
+        self.quote_context = OpenQuoteContext(host='127.0.0.1', sync_port=11111, async_port=11111)
 
     #检查是否是可以出发的时间
     def check_fire_time(self, begin_in_day, end_in_day):
@@ -44,16 +45,23 @@ class process_cond_order():
 
     #检查价格并且下单
     def check_price_do(self):
-        ft_api = Futu()
         for row in self.todo_orders[:]:
-            xs_data  = ft_api.get_ticker(stock_util().get_market_name(row.stock_code), row.stock_code)
-            now_price = xs_data['Cur']
+            code_list = []
+            code_list.append(row.stock_code)
+            ret_status, ret_data = self.quote_context.get_stock_quote(code_list)
+            if ret_status == RET_ERROR:
+                logging.info("get ticker error:stock_code=%s, msg=%s" % (code_list, ret_data))
+                return
+
+
+
+            now_price = ret_data["last_price"][0]
             logging.info("Checking Cond Order: now_price=%f, row_compare_price=%f, row.direction=%s" % (now_price, row.compare_price, row.direction))
             if (now_price >= row.compare_price and row.direction == order_direction_def["up"] \
                     or now_price <= row.compare_price and row.direction == order_direction_def["down"]) \
                     and self.check_fire_time(row.begin_in_day, row.end_in_day):
-                logging.info("submit order: row.order_id=%s, row.action =%s, , row.deal_price=%f,  row.amount=%d" % (row.order_id, row.action, row.deal_price,  row.amount))
-                (ret, result) = self.auto_trade.buy_sell(row.action, row.stock_code, row.deal_price, row.amount)
+                logging.info("submit order: row.order_id=%s, row.action =%s, row.deal_price=%f,  row.amount=%d" % (row.order_id, row.action, row.deal_price,  row.amount))
+                (ret, result) = self.auto_trade.buy_sell(row.action, row.stock_code[3:], row.deal_price, row.amount)
                 if ret != 0:
                     logging.warn("deal fail: ret=%d, action=%s, stock_code=%s, deal_price=%f, amount=%d" % (ret, row.action, row.stock_code, row.deal_price, row.amount))
                     continue
@@ -63,14 +71,18 @@ class process_cond_order():
     #从数据库load数据到本地进行访问
     def load_from_db(self):
         self.todo_orders = self.order_db.get_todo_orders()
-        print "Loading From DB"
+        print("Loading From DB and subscribe")
         for row in self.todo_orders:
             logging.info("Load from db: stock_code=%s, insert_time=%s" % (row.stock_code, row.insert_time))
+            ret_status, ret_data = self.quote_context.subscribe(row.stock_code, "QUOTE")
+            if ret_status != RET_OK:
+                print("%s %s: %s" % (row.stock_code, "QUOTE", ret_data))
+                continue
 
     def run(self):
         while True:
             if self.last_dbcheck_time + 5 < time.time():
-                print "Check TIme"
+                print("Check TIme")
                 self.load_from_db()
                 self.last_dbcheck_time = time.time()
             self.check_price_do()

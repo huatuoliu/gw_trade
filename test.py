@@ -3,6 +3,53 @@
 import os, sys
 import re
 #import Image
+import pandas as pd
+import numpy as np
+from datetime import *
+print range(5)
+
+
+def get_last_month(month_day):
+    s1 = "20" + month_day
+    d1 = datetime.strptime(s1, "%Y%m")
+    d2 = d1 - timedelta(days=1)
+    return d2.strftime("%Y%m")
+d2 = get_last_month("1609")
+
+
+print d2
+
+exit()
+
+a = np.array([-1,  -1 ,  -1,  -1,  -1])
+print a/2
+print abs(a).mean()
+
+
+t1 = date(2016, 8, 3)
+t2 = datetime(2016, 8, 3)
+
+if t1 == t2:
+    print "time equal"
+
+print t2-t1
+
+data = {
+      'closePrice': np.array([ 16.93,  16.3 ,  16.56,  16.95,  16.66]),
+      'turnoverValue': np.array([  4.44733303e+09,   5.77643795e+09,   3.94335705e+09, 4.64033583e+09,   3.89352207e+09]),
+      'turnoverVol': np.array([  2.60952337e+08,   3.44725740e+08,   2.41593696e+08, 2.77314172e+08,   2.31968840e+08]),
+      'lowPrice': np.array([ 16.8 ,  16.16,  15.98,  16.5 ,  16.56]),
+      'highPrice': np.array([ 17.5 ,  17.2 ,  16.7 ,  16.98,  17.04]),
+      'openPrice': np.array([ 17.5 ,  17.1 ,  16.32,  16.58,  16.98])
+  }
+
+a = [1 if data['closePrice'][i] - data['openPrice'][i] >= 0 else 0 for i in range(5)]
+print sum(a)
+
+
+
+exit()
+
 
 a=(1, 2, 3)
 print a

@@ -54,7 +54,7 @@ class crack_bmp:
             val = valueList[i]
             row = i / total_col
             col = i % total_col
-            num_index = (col - 6) / 13
+            num_index = (int)((col - 6) / 13)
             #if i % total_col == 0 and i / total_col > 0:
             #    print "\n",
             if row < begin_row or row > end_row or col < begin_col or col > end_col:
