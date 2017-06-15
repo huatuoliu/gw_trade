@@ -32,7 +32,7 @@ parser.add_argument("cmd_args", nargs='*', help="[Buy Stock. Usage: -B stock_cod
                                                 "  [Query OnGoing Order. Usage: -tG]" \
                                                 "  [Cancel OnGoing Order. Usage: -tC order_id. order_id can be acquired from the result of -tG cmd]")
 args = parser.parse_args()
-print args.action_type, args.cmd_args
+#print(args.action_type, args.cmd_args)
 
 auto_trade = auto_trade("config.ini")
 
@@ -51,7 +51,7 @@ elif (args.action_type == "Q"):
     if ret == 0:
         logging.info("Query holdings OK: result=%s" % result)
     else:
-        logging.warn("query order fail: ret=%d" % ret)
+        logging.warn("query order fail: ret=%d, result=%s" % (ret, result))
 elif (args.action_type == "A"):
     (ret, result) = auto_trade.query_account()
     if ret == 0:
@@ -72,7 +72,7 @@ elif (args.action_type == "C"):
     else:
         logging.warn("query cancel order fail: ret=%d, msg=%s" % (ret, result))
 else:
-    print "No Such Action: " + args.action_type
+    print("No Such Action. Please input: python main.py -h ")
 #except Exception, e:
 #    print "Process Error: e=" + e.message
 #    exit(1)

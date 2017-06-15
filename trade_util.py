@@ -25,6 +25,7 @@ class gw_ret_code:
     NOT_DEAL_TIME =4 #990297020
     NOT_RIGHT_ORDER_ID = 5 #990268040订单号不对
     NOT_CORRECT_PRICE = 6  #990265060价位不对
+    PASSWORD_ERROR = 7 #980023096 账号或者密码不对
 
     LOGIN_FAIL = 100 #login fail
     OTHER_ERROR = 999
@@ -97,9 +98,22 @@ class auto_trade:
         (ret, result) = self.gw_trade.post_to_url("https://trade.cgws.com/cgi-bin/user/Login", post_data)
         if ret != 0:
             return -15
-        #print result
+
+        # 判断是否出错
+        reg = re.compile('.*PublicKey.*')
+        match = reg.search(result.decode("gbk", "ignore"))
+        if match:
+            return -20
+        '''
+            if match.group(1) == "980023096":
+                print("login  error: msg=%s" % (match.group(1)))
+                return gw_ret_code.PASSWORD_ERROR
+            else:
+                print("login error: msg=%s" % (match.group(1)))
+                return gw_ret_code.OTHER_ERROR
+        '''
+
         return 0
-        #print ret
         ############ get main page cookie ##############
 
     #买卖
@@ -139,7 +153,7 @@ class auto_trade:
 
         #判断是否出错
         reg = re.compile('.*alert.*\[-(\d{6,})\]')
-        match = reg.search(result.decode('gb2312'))
+        match = reg.search(result.decode('gbk', "ignore"))
         if match:
             if match.group(1) == "150906130":
                 return gw_ret_code.NOT_ENOUGH_MONEY, "资金不足"
@@ -152,13 +166,13 @@ class auto_trade:
             elif match.group(1) == "990265060":
                 return gw_ret_code.NOT_CORRECT_PRICE, "价位不对"
             else:
-                print( "not deal error: msg=%s" % (match.group(1)))
+                print("not deal error: msg=%s" % (match.group(1)))
                 return gw_ret_code.OTHER_ERROR, "其他错误"
 
         #解析出合同编号，如果出错，那么返回""
-        print(result.decode("gbk"))
+        print(result.decode("gbk", "ignore"))
         reg = re.compile('alert.*(\d{4})')
-        match = reg.search(result)
+        match = reg.search(result.decode("gbk", "ignore"))
         if match:
             return 0, match.group(1)
         else:
@@ -180,7 +194,7 @@ class auto_trade:
         #print result
         # 判断是否出错
         reg = re.compile('.*alert.*\[-(\d{6,})\]')
-        match = reg.search(result)
+        match = reg.search(result.decode("gbk", "ignore"))
         if match:
             if match.group(1) == "990268040":
                 return gw_ret_code.NOT_RIGHT_ORDER_ID, "订单号不正确"
@@ -203,6 +217,7 @@ class auto_trade:
     def query_order(self):
         ret = self.prepare()
         if ret != 0:
+            print("login fail: ret=%d" % ret)
             return  gw_ret_code.LOGIN_FAIL, "登录失败"
         (ret, result) = self.gw_trade.get_to_url("https://trade.cgws.com/cgi-bin/stock/EntrustQuery?function=MyStock&stktype=0", "")
         if ret != 0:
