@@ -38,13 +38,13 @@
 ### 下单功能
 usage: main.py [-h] [-t {B,S,Q,A,G,C,N}] [cmd_args [cmd_args ...]]
 
-[Buy Stock. Usage: -B stock_code price amount. e.g. -tB 159915 2 100] 
-[Sell Stock. Usage: -S stock_code  price amount. e.g. -tS 159915 2 100]
-[Query Account Info. Usage: -tA] 
-[Query Holding Stock. Usage: -tQ]
-[Query OnGoing Order. Usage: -tG] 
-[Cancel OnGoing Order. Usage: -tC order_id. order_id can be acquired from the result of -tG cmd] 
-[Buy New Stock. Usage: -tN]
+1. [Buy Stock. Usage: -B stock_code price amount. e.g. -tB 159915 2 100] 
+2. [Sell Stock. Usage: -S stock_code  price amount. e.g. -tS 159915 2 100]
+3. [Query Account Info. Usage: -tA] 
+4. [Query Holding Stock. Usage: -tQ]
+5. [Query OnGoing Order. Usage: -tG] 
+6. [Cancel OnGoing Order. Usage: -tC order_id. order_id can be acquired from the result of -tG cmd] 
+7. [Buy New Stock. Usage: -tN]
 
 ### 条件单功能
 1. 修改数据库，添加条件单（求人做页面）
