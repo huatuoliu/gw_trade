@@ -26,6 +26,8 @@ class gw_ret_code:
     NOT_RIGHT_ORDER_ID = 5 #990268040订单号不对
     NOT_CORRECT_PRICE = 6  #990265060价位不对
     PASSWORD_ERROR = 7 #980023096 账号或者密码不对
+    SHENGOU_LIMIT = 8 #申购数量超过可申购额度
+    REPEATED_SHENGOU = 9  #"-150906090新股配售同一只证券代码不允许重复委托!"
 
     LOGIN_FAIL = 100 #login fail
     OTHER_ERROR = 999
@@ -49,6 +51,7 @@ class auto_trade:
             cf.read(config_file)
             self.account = cf.get("common", "account")
             self.passwd_encrypted = cf.get("common", "passwd_encrypted") #加密后的密码
+            #print("passwd_encrypted="+self.passwd_encrypted)
             secuids_sh = cf.get("common", "secuids_sh")  #上海的股东代码
             secuids_sz = cf.get("common", "secuids_sz") #深圳的股东代码
             self.secuids = {
@@ -154,7 +157,7 @@ class auto_trade:
         #判断是否出错
         reg = re.compile('.*alert.*\[-(\d{6,})\]')
         match = reg.search(result.decode('gbk', "ignore"))
-        if match:
+        if match: #正常的买卖
             if match.group(1) == "150906130":
                 return gw_ret_code.NOT_ENOUGH_MONEY, "资金不足"
             elif match.group(1) == "150906135":
@@ -165,8 +168,17 @@ class auto_trade:
                 return gw_ret_code.NOT_DEAL_TIME, "非交易时段"
             elif match.group(1) == "990265060":
                 return gw_ret_code.NOT_CORRECT_PRICE, "价位不对"
+            elif  match.group(1) == "150906090":
+                return gw_ret_code.REPEATED_SHENGOU, "新股配售同一只证券代码不允许重复委托"
             else:
                 print("not deal error: msg=%s" % (match.group(1)))
+                return gw_ret_code.OTHER_ERROR, "其他错误"
+        else: #判断是否新股申购
+            reg1 = re.compile('.*alert.*新股申购数量超出.*\[(\d{3,})\]')
+            match = reg1.search(result.decode('utf-8', "ignore"))
+            if match:
+                return gw_ret_code.SHENGOU_LIMIT, match.group(1)
+            else:
                 return gw_ret_code.OTHER_ERROR, "其他错误"
 
         #解析出合同编号，如果出错，那么返回""

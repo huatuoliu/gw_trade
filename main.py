@@ -4,6 +4,7 @@ import sys
 import argparse
 from trade_util import *
 import logging
+from ipo_spider import *
 
 ####### init log ################
 logging.basicConfig(level=logging.DEBUG,
@@ -24,13 +25,14 @@ logging.getLogger('').addHandler(console)
 
 ######## init parse #############
 parser = argparse.ArgumentParser()
-parser.add_argument("-t", "--action_type", choices=['B', 'S', 'Q', 'A', 'G', 'C'], help="B: Buy; S: Sell; Q: Query Holdings; A: Query Account Info; G: Query Ongoings; C: Cancel Order")
+parser.add_argument("-t", "--action_type", choices=['B', 'S', 'Q', 'A', 'G', 'C', 'N'], help="B: Buy; S: Sell; Q: Query Holdings; A: Query Account Info; G: Query Ongoings; C: Cancel Order; N: Buy New Stock")
 parser.add_argument("cmd_args", nargs='*', help="[Buy Stock. Usage: -B stock_code price amount. e.g. -tB 159915  2 100]" \
                                                 "  [Sell Stock. Usage: -S  stock_code price amount. e.g. -tS 159915 2 100]" \
                                                 "  [Query Account Info. Usage: -tA]" \
                                                 "  [Query Holding Stock. Usage: -tQ]" \
                                                 "  [Query OnGoing Order. Usage: -tG]" \
-                                                "  [Cancel OnGoing Order. Usage: -tC order_id. order_id can be acquired from the result of -tG cmd]")
+                                                "  [Cancel OnGoing Order. Usage: -tC order_id. order_id can be acquired from the result of -tG cmd]" \
+                                                "  [Buy New Stock. Usage: -tN]")
 args = parser.parse_args()
 #print(args.action_type, args.cmd_args)
 
@@ -46,6 +48,31 @@ if (args.action_type == "B" or args.action_type == "S"):
     #time.sleep(10)
     #for  record in ongoing_list:
     #    auto_trade.cancel_order(record["order_id"])
+
+elif (args.action_type == "N"):
+    cn_spider = CnIpoSpider()
+    cn_spider.crawl_list()
+    # cn_spider.crawl_detail()
+    today_ipos = cn_spider.get_today_ipo()
+    if len(today_ipos) == 0:
+        logging.info("今天没有IPO")
+    else:
+        logging.info("今天有IPO")
+        logging.info(today_ipos)
+    logging.info("进行申购")
+    for one_ipo in today_ipos:
+        (ret, result) = auto_trade.buy_sell("B", one_ipo["apply_code"], one_ipo["ipo_price"], one_ipo["apply_limit"])
+        if ret == 0:
+            logging.info("Deal OK: order_id=%s" % result)
+        elif ret == gw_ret_code.SHENGOU_LIMIT:
+            (ret1, result1) = auto_trade.buy_sell("B", one_ipo["apply_code"], one_ipo["ipo_price"], int(result))
+            if ret1 == 0:
+                logging.info("Deal OK: order_id=%s" % result1)
+            else:
+                logging.warn("Buy Or Sell Fail: ret=%d, ret_msg=%s" % (ret, result1))
+        else:
+            logging.warn("Buy Or Sell Fail: ret=%d, ret_msg=%s" % (ret, result))
+
 elif (args.action_type == "Q"):
     (ret, result) = auto_trade.query_order()
     if ret == 0:
