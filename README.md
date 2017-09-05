@@ -51,6 +51,7 @@ usage: main.py [-h] [-t {B,S,Q,A,G,C,N}] [cmd_args [cmd_args ...]]
 2. 启动process_cond_order.py。该脚本用于检查是否提交条件单到长城证券。
 
 ### 新股一键申购
-可设置系统定时任务，调用python main.py -tN进行新股自动申购。
+1. 修改run.bat里面的目录路径
+2. 加入windows的系统定时任务
 
 

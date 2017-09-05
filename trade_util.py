@@ -154,6 +154,7 @@ class auto_trade:
             logging.warn("post to url fail: ret=%d" % ret)
             return -10;
 
+        #print(result.decode('gbk', "ignore"))
         #判断是否出错
         reg = re.compile('.*alert.*\[-(\d{6,})\]')
         match = reg.search(result.decode('gbk', "ignore"))
