@@ -4,7 +4,8 @@ import time
 from db_util import *
 from stock_util import *
 from trade_util import *
-from openft.open_quant_context import *
+import futuquant as ft
+from futuquant.open_context import *
 
 ####### init log ################
 logging.basicConfig(level=logging.DEBUG,
@@ -29,7 +30,8 @@ class process_cond_order():
         self.order_db = db_util()
         self.order_db.init_db()
         self.auto_trade = auto_trade("config.ini")
-        self.quote_context = OpenQuoteContext(host='127.0.0.1', sync_port=11111, async_port=11111)
+        self.quote_context = ft.OpenQuoteContext(host='127.0.0.1', port=11111)
+
 
     #检查是否是可以出发的时间
     def check_fire_time(self, begin_in_day, end_in_day):
@@ -52,8 +54,6 @@ class process_cond_order():
             if ret_status == RET_ERROR:
                 logging.info("get ticker error:stock_code=%s, msg=%s" % (code_list, ret_data))
                 return
-
-
 
             now_price = ret_data["last_price"][0]
             logging.info("Checking Cond Order: now_price=%f, row_compare_price=%f, row.direction=%s" % (now_price, row.compare_price, row.direction))
@@ -86,7 +86,7 @@ class process_cond_order():
                 self.load_from_db()
                 self.last_dbcheck_time = time.time()
             self.check_price_do()
-            time.sleep(5)
+            time.sleep(1)
 
 
 process = process_cond_order()

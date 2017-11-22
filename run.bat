@@ -1,2 +1,2 @@
-cd D:\gw_trade
+CD /D D:\gw_trade 
 python main.py -tN

@@ -24,7 +24,7 @@ class stock_util:
                 return "none"
     '''
     def get_market(self, stock_code):
-        if (stock_code.startswith("6") or  stock_code.startswith("500") or  stock_code.startswith("550") or stock_code.startswith("510")):
+        if (stock_code.startswith("6") or  stock_code.startswith("500") or  stock_code.startswith("550") or stock_code.startswith("510")) or stock_code.startswith("7"):
             return self.MARKET_SH
         elif (stock_code.startswith("00") or stock_code.startswith("30") or stock_code.startswith("150") or stock_code.startswith("159")):
             return self.MARKET_SZ

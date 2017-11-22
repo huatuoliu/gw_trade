@@ -176,7 +176,7 @@ class auto_trade:
                 return gw_ret_code.OTHER_ERROR, "其他错误"
         else: #判断是否新股申购
             reg1 = re.compile('.*alert.*新股申购数量超出.*\[(\d{3,})\]')
-            match = reg1.search(result.decode('utf-8', "ignore"))
+            match = reg1.search(result.decode('gbk', "ignore"))
             if match:
                 return gw_ret_code.SHENGOU_LIMIT, match.group(1)
             else:
